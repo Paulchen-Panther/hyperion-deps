@@ -128,7 +128,7 @@ jobs:
         if: ${{ inputs.upload_artifact }}
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ format('macos-{0}-qt${{ env.QT_VERSION }}-{1}', matrix.architecture, inputs.build_type) }}
+          name: ${{ format('macos-{0}-qt{1}-{2}', matrix.architecture, env.QT_VERSION, inputs.build_type) }}
           path: build/install/*
 
 ######################
@@ -198,5 +198,5 @@ jobs:
         if: ${{ inputs.upload_artifact }}
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ format('windows-{0}-qt${{ env.QT_VERSION }}-{1}', matrix.architecture, env.BUILD_TYPE) }}
+          name: ${{ format('windows-{0}-qt{1}-{2}', matrix.architecture, env.QT_VERSION, env.BUILD_TYPE) }}
           path: build/install/*
