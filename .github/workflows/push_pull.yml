@@ -34,7 +34,7 @@ jobs:
   # Publish to GitHub (Only on tagged commits with date format e.g. 2025-01-31)
   github_publish:
     name: Publish to GitHub
-    if: ${{ startsWith(github.event.ref, 'refs/tags') }}
+    # if: ${{ startsWith(github.event.ref, 'refs/tags') }}
     needs: github_build
     runs-on: ubuntu-latest
     steps:
