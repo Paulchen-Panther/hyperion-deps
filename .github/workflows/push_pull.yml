@@ -34,7 +34,7 @@ jobs:
   # Publish to GitHub (Only on tagged commits with date format e.g. 2025-01-31)
   github_publish:
     name: Publish to GitHub
-    # if: ${{ startsWith(github.event.ref, 'refs/tags') }}
+    if: ${{ startsWith(github.event.ref, 'refs/tags') }}
     needs: github_build
     runs-on: ubuntu-latest
     steps:
@@ -51,6 +51,10 @@ jobs:
 
       - name: ⬇ Checkout
         uses: actions/checkout@v7
+      
+      - name: 🗓 Set Current Date
+        id: set_date
+        run: echo "current_date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
 
       - name: 💾 Download Artifacts
         uses: actions/download-artifact@v8
@@ -59,19 +63,32 @@ jobs:
 
       - name: 📦 Repack Artifacts
         shell: bash
+        env:
+          CURRENT_DATE: ${{ steps.set_date.outputs.current_date }}
         run: |
-          json=$(jq -n --arg version "123" --arg baseURL "${{ github.server_url }}/${{ github.repository }}/releases/download" '{version: $version, baseUrl: $baseURL, hashes: {}}')
+          if [[ -z "$CURRENT_DATE" ]]; then
+            echo "❌ CURRENT_DATE is empty – aborting" >&2
+            exit 1
+          fi
+
+          json=$(jq -n --arg version "$CURRENT_DATE" \
+            --arg baseURL "${{ github.server_url }}/${{ github.repository }}/releases/download" \
+            '{version: $version, baseUrl: $baseURL, hashes: {}}')
+
           for artifact in ${{ github.workspace }}/artifacts/*/; do
-            echo 📦 Repack $(basename "${artifact%/}-123.tar.gz")...
-            tar -czf "${artifact%/}-123.tar.gz" -C "$artifact" .
+            echo 📦 Repack $(basename "${artifact%/}-${CURRENT_DATE}.tar.gz")...
+            tar -czf "${artifact%/}-${CURRENT_DATE}.tar.gz" -C "$artifact" .
             rm -fR "$artifact"
-            fname=$(basename ${artifact%/})
+
+            fname=$(basename "${artifact%/}")
             IFS='-' read -ra fname <<< "$fname"
             distribution="${fname[0]}"
             architecture="${fname[1]}"
             qtVersion="${fname[2]#qt}"
             buildType="${fname[3]}"
-            hash=$(sha256sum "${artifact%/}-123.tar.gz" | cut -d " " -f 1)
+
+            hash=$(sha256sum "${artifact%/}-${CURRENT_DATE}.tar.gz" | cut -d " " -f 1)
+
             json=$(jq \
               --arg distribution "$distribution" \
               --arg architecture "$architecture" \
@@ -83,8 +100,10 @@ jobs:
                 | (.hashes[$distribution][$architecture][$buildType] = $hash)
               ' <<< "$json")
           done
+
           echo ✏️ Write JSON build spec file and release notes...
           echo "$json" | jq . > ${{ github.workspace }}/artifacts/buildspec.json
+
           shopt -s extglob
           echo "### SHA256 Checksums" > ${{ github.workspace }}/artifacts/CHECKSUMS.txt
           for file in ${{ github.workspace }}/artifacts/*.tar.gz; do
@@ -96,8 +115,8 @@ jobs:
         with:
           draft: false
           prerelease: false
-          name: Hyperion Deps Build (123 TEST)
-          tag_name: 123
+          name: Hyperion Deps Build ${{ steps.set_date.outputs.current_date }}
+          tag_name: ${{ steps.set_date.outputs.current_date }}
           body_path: ${{ github.workspace }}/artifacts/CHECKSUMS.txt
           files: |
             ${{ github.workspace }}/artifacts/*.tar.gz

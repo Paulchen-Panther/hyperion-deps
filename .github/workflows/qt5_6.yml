@@ -68,7 +68,7 @@ jobs:
         if: ${{ inputs.upload_artifact }}
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ format('{0}_{1}-qt{2}-{3}', matrix.os.distribution, matrix.os.architecture[0], matrix.os.qt_version, inputs.build_type) }}
+          name: ${{ format('{0}-{1}-qt{2}-{3}', matrix.os.distribution, matrix.os.architecture[0], matrix.os.qt_version, inputs.build_type) }}
           path: deploy/*
 
 ######################
