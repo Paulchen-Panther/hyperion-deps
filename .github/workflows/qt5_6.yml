@@ -29,7 +29,7 @@ jobs:
       matrix:
         os: [
           { distribution: linux, description: "Linux (amd64)", architecture: [amd64, linux/amd64], platform: x11, qt_version: "6.4.2" },
-          { distribution: linux, description: "Linux (armhf – Pi 1/Zero/2)", architecture: [armhf, linux/arm/v6], platform: rpi, qt_version: "6.4.2", cflags: "-march=armv6" },
+          { distribution: linux, description: "Linux (armhf – Pi 1/Zero/2)", architecture: [armhf, linux/arm/v6], platform: rpi, qt_version: "6.4.2", cflags: "-march=armv6 -mfpu=vfp -mfloat-abi=hard" },
           { distribution: linux, description: "Linux (arm64 – Pi 3/4/5/Zero 2)", architecture: [arm64, linux/arm64], platform: rpi, qt_version: "6.4.2" },
         ]
 
