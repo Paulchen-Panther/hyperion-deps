@@ -102,7 +102,7 @@ jobs:
           done
 
           echo ✏️ Write JSON build spec file and release notes...
-          echo "$json" | jq . > ${{ github.workspace }}/artifacts/buildspec.json
+          echo "$json" | jq . > ${{ github.workspace }}/artifacts/PreBuiltSpecs.json
 
           shopt -s extglob
           echo "### SHA256 Checksums" > ${{ github.workspace }}/artifacts/CHECKSUMS.txt
@@ -120,7 +120,7 @@ jobs:
           body_path: ${{ github.workspace }}/artifacts/CHECKSUMS.txt
           files: |
             ${{ github.workspace }}/artifacts/*.tar.gz
-            ${{ github.workspace }}/artifacts/buildspec.json
+            ${{ github.workspace }}/artifacts/PreBuiltSpecs.json
 
       - name: 🧹 Cleanup
         uses: geekyeggo/delete-artifact@v6
