@@ -58,7 +58,7 @@ jobs:
             ghcr.io/hyperion-project/debian:bookworm-qt6 \
             /bin/bash -c "
               git config --global --add safe.directory /source &&
-              cmake --preset linux-${{ inputs.build_type }} -DHYPERION_DIR=/source/hyperion -DPLATFORM=${{ matrix.os.platform }} ${{ matrix.os.cflags && format('-DCMAKE_C_FLAGS="{0}" -DCMAKE_CXX_FLAGS="{0}"', matrix.os.cflags) || '' }} &&
+              cmake --preset linux-${{ inputs.build_type }} -DHYPERION_DIR=/source/hyperion -DPLATFORM=${{ matrix.os.platform }} ${{ matrix.os.cflags && format('-DCMAKE_C_FLAGS='{0}' -DCMAKE_CXX_FLAGS='{0}'', matrix.os.cflags) || '' }} &&
               cmake --build --preset linux-${{ inputs.build_type }} --target install --parallel $(nproc) &&
               cp -a /source/build/install/. /deploy/ 2>/dev/null"
         env:
