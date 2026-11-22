@@ -126,7 +126,7 @@ jobs:
         uses: geekyeggo/delete-artifact@v6
         with:
           name: |
-            linux_*
+            linux-*
             macos-*
             windows-*
           failOnError: false
