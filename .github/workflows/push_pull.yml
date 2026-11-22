@@ -29,7 +29,7 @@ jobs:
     secrets: inherit
     with:
       build_type: ${{ matrix.build.type }}
-      upload_artifact: ${{ startsWith(github.event.ref, 'refs/tags') }}
+      upload_artifact: true
 
   # Publish to GitHub (Only on tagged commits with date format e.g. 2025-01-31)
   github_publish:
@@ -107,7 +107,7 @@ jobs:
         uses: geekyeggo/delete-artifact@v6
         with:
           name: |
-            debian_*
+            linux_*
             macos-*
             windows-*
           failOnError: false
